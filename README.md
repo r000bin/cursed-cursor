@@ -12,11 +12,32 @@ explicit goal is to make clicking anything genuinely hard.
 
 - Windows 10 or 11
 - Windows PowerShell 5.1 (built in) or PowerShell 7+
-- No install, no admin rights, no dependencies — it's a single script
+- No admin rights, no dependencies — it's a single script
 
-## Quick start
+## Install
 
-Double-click one of the `.cmd` launchers:
+From the [PowerShell Gallery](https://www.powershellgallery.com/packages/CursedCursor):
+
+```powershell
+Install-Script -Name CursedCursor -Scope CurrentUser
+```
+
+This puts `CursedCursor` on your `PATH`, so you can run it from anywhere:
+
+```powershell
+CursedCursor wild        # maximum chaos
+CursedCursor restore     # put your pointer back
+```
+
+Update later with `Update-Script CursedCursor`, remove with `Uninstall-Script CursedCursor`.
+
+> Installed scripts are still `.ps1`, so your [execution policy](https://learn.microsoft.com/powershell/module/microsoft.powershell.security/set-executionpolicy)
+> applies. Most devs already run `RemoteSigned`; if not:
+> `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
+
+### Or just clone and run
+
+Don't want to install? Clone the repo and double-click one of the `.cmd` launchers:
 
 | File | What it does |
 |------|--------------|
@@ -103,6 +124,11 @@ $TinySize* / $HugeSize*                  # 'wild' bimodal size bands
 $SluggishMin/Max, $FlightyMin/Max        # 'wild' bimodal speed bands
 $WildIntervalMinSec / $WildIntervalMaxSec # 'wild' random interval
 ```
+
+## Releasing
+
+Maintainers: see [PUBLISHING.md](PUBLISHING.md) for how to publish a new version
+to the PowerShell Gallery.
 
 ## License
 

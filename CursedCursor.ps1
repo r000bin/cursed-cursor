@@ -1,3 +1,26 @@
+<#PSScriptInfo
+
+.VERSION 1.0.0
+
+.GUID bf1679f7-0923-4c7c-bc37-23fed38c538b
+
+.AUTHOR r000bin
+
+.COPYRIGHT (c) 2026 r000bin
+
+.TAGS Windows cursor mouse pointer fun prank toy
+
+.LICENSEURI https://github.com/r000bin/cursed-cursor/blob/main/LICENSE
+
+.PROJECTURI https://github.com/r000bin/cursed-cursor
+
+.RELEASENOTES
+Initial release: randomize / restore / run / wild / set modes.
+
+#>
+
+#Requires -Version 5.1
+
 <#
 .SYNOPSIS
     Cursed Cursor - randomly changes the Windows mouse pointer (appearance, size,
