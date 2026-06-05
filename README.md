@@ -1,4 +1,4 @@
-# 🖱️ Pointer Goes Wild
+# 🖱️ Cursed Cursor
 
 A small, just-for-fun Windows tool that randomizes your mouse pointer — its
 **appearance**, **size**, and **speed** — using the native Win32 cursor APIs.
@@ -28,8 +28,8 @@ Double-click one of the `.cmd` launchers:
 Or run it from a PowerShell window:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\PointerGoesWild.ps1 randomize
-powershell -ExecutionPolicy Bypass -File .\PointerGoesWild.ps1 restore
+powershell -ExecutionPolicy Bypass -File .\CursedCursor.ps1 randomize
+powershell -ExecutionPolicy Bypass -File .\CursedCursor.ps1 restore
 ```
 
 (Tip: run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once and you can
@@ -50,16 +50,16 @@ set         Apply an explicit cursor file and/or speed/size (for testing).
 
 ```powershell
 # Gentle continuous fun, re-rolling every 8 seconds
-.\PointerGoesWild.ps1 run -IntervalSeconds 8
+.\CursedCursor.ps1 run -IntervalSeconds 8
 
 # Maximum havoc
-.\PointerGoesWild.ps1 wild
+.\CursedCursor.ps1 wild
 
 # Only change the look, leave speed and size alone
-.\PointerGoesWild.ps1 randomize -SkipSpeed -SkipSize
+.\CursedCursor.ps1 randomize -SkipSpeed -SkipSize
 
 # A specific giant cursor, no speed change
-.\PointerGoesWild.ps1 set -Cursor C:\Windows\Cursors\dinosaur.ani -Size 200 -SkipSpeed
+.\CursedCursor.ps1 set -Cursor C:\Windows\Cursors\dinosaur.ani -Size 200 -SkipSpeed
 ```
 
 ### What "wild" does
@@ -79,7 +79,7 @@ set         Apply an explicit cursor file and/or speed/size (for testing).
   **keyboard** to stop — in wild mode clicking is the whole problem!).
 - One-shot `randomize` persists until you run `restore` (or sign out / reboot).
 - Your original pointer **speed** is saved to
-  `%LOCALAPPDATA%\pointer-goes-wild-state.json` so `restore` can recover it.
+  `%LOCALAPPDATA%\cursed-cursor-state.json` so `restore` can recover it.
   Cursor appearance and size are restored by reloading the system scheme.
 
 ## How it works
@@ -95,7 +95,7 @@ All via P/Invoke into `user32.dll`:
 
 ## Tuning
 
-The randomization ranges are constants at the top of `PointerGoesWild.ps1`:
+The randomization ranges are constants at the top of `CursedCursor.ps1`:
 
 ```powershell
 $MinCursorSize / $MaxCursorSize          # 'run' mode size range

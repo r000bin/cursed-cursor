@@ -1,24 +1,26 @@
 <#
 .SYNOPSIS
-    Pointer Goes Wild - randomly changes the Windows mouse pointer (and speed) just for fun.
+    Cursed Cursor - randomly changes the Windows mouse pointer (appearance, size,
+    and speed) just for fun.
 
 .DESCRIPTION
-    Proof-of-concept that uses the native Win32 cursor APIs (SetSystemCursor,
-    SystemParametersInfo, LoadCursorFromFile) via P/Invoke to swap the system
-    cursors for random ones found in C:\Windows\Cursors, and optionally randomize
-    the pointer speed.
+    Uses the native Win32 cursor APIs (LoadImage, SetSystemCursor,
+    SystemParametersInfo) via P/Invoke to swap the system cursors for random ones
+    found in C:\Windows\Cursors - at random sizes - and optionally randomize the
+    pointer speed.
 
     IMPORTANT: cursor changes made with SetSystemCursor are SYSTEM-WIDE and STICKY.
-    Always run 'restore' (or use 'run' which restores on Ctrl+C) to put things back.
-    A reboot or sign-out also resets the system cursors.
+    Always run 'restore' (or use 'run'/'wild' which restore on Ctrl+C) to put
+    things back. A reboot or sign-out also resets the system cursors.
 
 .PARAMETER Mode
     randomize : pick random cursors + size + speed, apply, and exit (persists).
     restore   : put the user's real cursors and speed back.
     run       : loop forever, re-randomizing on an interval; restores on Ctrl+C.
-    wild      : like 'run', but cranked - giant cursors + max speed on a fast
+    wild      : like 'run', but cranked - bimodal size (tiny specks <-> huge
+                monsters) + bimodal speed (sluggish <-> flighty) on a random
                 interval, with the explicit aim of making it hard to click.
-    set       : apply an explicit cursor file and/or speed (for testing).
+    set       : apply an explicit cursor file and/or speed/size (for testing).
 
 .PARAMETER IntervalSeconds
     Seconds between changes in 'run' mode. Default 10.
@@ -39,11 +41,11 @@
     Don't randomize the cursor size; load cursors at the system default size.
 
 .EXAMPLE
-    .\PointerGoesWild.ps1 randomize
+    .\CursedCursor.ps1 randomize
 .EXAMPLE
-    .\PointerGoesWild.ps1 run -IntervalSeconds 5
+    .\CursedCursor.ps1 run -IntervalSeconds 5
 .EXAMPLE
-    .\PointerGoesWild.ps1 restore
+    .\CursedCursor.ps1 restore
 #>
 [CmdletBinding()]
 param(
@@ -143,7 +145,7 @@ $OCR = @{
 }
 
 $CursorDir = Join-Path $env:WINDIR 'Cursors'
-$StateFile = Join-Path $env:LOCALAPPDATA 'pointer-goes-wild-state.json'
+$StateFile = Join-Path $env:LOCALAPPDATA 'cursed-cursor-state.json'
 
 # --- Helpers ------------------------------------------------------------------
 function Get-CursorFiles {
@@ -316,7 +318,7 @@ switch ($Mode) {
 
     'randomize' {
         Invoke-Randomize -NoSpeed:$SkipSpeed -NoSize:$SkipSize
-        Write-Host "Run '.\PointerGoesWild.ps1 restore' to put things back." -ForegroundColor Yellow
+        Write-Host "Run '.\CursedCursor.ps1 restore' to put things back." -ForegroundColor Yellow
     }
 
     'run' {

@@ -1,5 +1,5 @@
 # Runtime state (lives in %LOCALAPPDATA%, but ignore stray copies just in case)
-pointer-goes-wild-state.json
+cursed-cursor-state.json
 
 # Windows
 Thumbs.db
