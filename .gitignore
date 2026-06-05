@@ -1,0 +1,17 @@
+# Runtime state (lives in %LOCALAPPDATA%, but ignore stray copies just in case)
+pointer-goes-wild-state.json
+
+# Windows
+Thumbs.db
+desktop.ini
+*.lnk
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Logs / temp
+*.log
+*.tmp
