@@ -16,17 +16,39 @@ explicit goal is to make clicking anything genuinely hard.
 
 ## Install
 
-From the [PowerShell Gallery](https://www.powershellgallery.com/packages/CursedCursor):
+### Quick install (one line, no Gallery account needed)
+
+```powershell
+irm https://raw.githubusercontent.com/r000bin/cursed-cursor/main/install.ps1 | iex
+```
+
+This downloads the script to `%LOCALAPPDATA%\Programs\CursedCursor` and puts a
+`cursed-cursor` command on your `PATH` (per-user, no admin). Then:
+
+```powershell
+cursed-cursor wild        # maximum chaos
+cursed-cursor restore     # put your pointer back
+```
+
+Prefer to read before you run? Inspect it first, then execute:
+
+```powershell
+$s = irm https://raw.githubusercontent.com/r000bin/cursed-cursor/main/install.ps1
+$s            # review it
+$s | iex      # run it
+```
+
+Uninstall any time:
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/r000bin/cursed-cursor/main/install.ps1))) -Uninstall
+```
+
+### From the PowerShell Gallery
 
 ```powershell
 Install-Script -Name CursedCursor -Scope CurrentUser
-```
-
-This puts `CursedCursor` on your `PATH`, so you can run it from anywhere:
-
-```powershell
-CursedCursor wild        # maximum chaos
-CursedCursor restore     # put your pointer back
+CursedCursor wild
 ```
 
 Update later with `Update-Script CursedCursor`, remove with `Uninstall-Script CursedCursor`.
