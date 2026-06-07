@@ -9,19 +9,23 @@
 
         irm https://raw.githubusercontent.com/r000bin/cursed-cursor/main/install.ps1 | iex
 
+    By default it installs the latest stable release tag and verifies the
+    downloaded script against its published SHA256 checksum before installing.
+
     To uninstall, invoke it as a scriptblock so you can pass the switch:
 
         & ([scriptblock]::Create((irm https://raw.githubusercontent.com/r000bin/cursed-cursor/main/install.ps1))) -Uninstall
 
 .PARAMETER Ref
-    Branch or tag to install from. Defaults to 'main'.
+    Branch or tag to install from. Defaults to the latest stable release tag.
+    Pass 'main' for the bleeding edge, or a tag like 'v1.0.0' to pin a version.
 
 .PARAMETER Uninstall
     Remove the installed files and the PATH entry.
 #>
 [CmdletBinding()]
 param(
-    [string]$Ref = 'main',
+    [string]$Ref = 'v1.0.0',
     [switch]$Uninstall
 )
 
@@ -67,6 +71,17 @@ New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
 
 # Download the tool.
 Invoke-WebRequest -Uri "$RawBase/CursedCursor.ps1" -OutFile $ScriptPath -UseBasicParsing
+
+# Verify the download against the published SHA256 before trusting it. Both come
+# from the same ref; with a pinned tag the content is immutable, so a mismatch
+# means a corrupted or tampered download.
+$expected = (((Invoke-WebRequest -Uri "$RawBase/CursedCursor.ps1.sha256" -UseBasicParsing).Content) -split '\s+')[0].Trim()
+$actual   = (Get-FileHash -Path $ScriptPath -Algorithm SHA256).Hash
+if ($actual -ne $expected) {
+    Remove-Item $ScriptPath -Force -ErrorAction SilentlyContinue
+    throw "Checksum mismatch - aborting install.`n  expected: $expected`n  actual:   $actual"
+}
+Write-Host "Checksum verified ($($expected.Substring(0,12))...)." -ForegroundColor DarkGray
 
 # Write a .cmd shim so 'cursed-cursor' works from any shell and bypasses the
 # execution policy (the downloaded .ps1 itself is never run by name).

@@ -22,7 +22,8 @@ explicit goal is to make clicking anything genuinely hard.
 irm https://raw.githubusercontent.com/r000bin/cursed-cursor/main/install.ps1 | iex
 ```
 
-This downloads the script to `%LOCALAPPDATA%\Programs\CursedCursor` and puts a
+This installs the latest **stable release** to `%LOCALAPPDATA%\Programs\CursedCursor`,
+verifies the download against its published **SHA256 checksum**, and puts a
 `cursed-cursor` command on your `PATH` (per-user, no admin). Then:
 
 ```powershell
@@ -30,12 +31,31 @@ cursed-cursor wild        # maximum chaos
 cursed-cursor restore     # put your pointer back
 ```
 
-Prefer to read before you run? Inspect it first, then execute:
+**Pin or choose a version.** By default the installer pins the latest stable tag.
+To install a specific version (or the bleeding-edge `main`), invoke it as a
+scriptblock and pass `-Ref`:
+
+```powershell
+# a specific release
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/r000bin/cursed-cursor/main/install.ps1))) -Ref v1.0.0
+
+# latest from main
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/r000bin/cursed-cursor/main/install.ps1))) -Ref main
+```
+
+**Prefer to read before you run?** Inspect it first, then execute:
 
 ```powershell
 $s = irm https://raw.githubusercontent.com/r000bin/cursed-cursor/main/install.ps1
 $s            # review it
 $s | iex      # run it
+```
+
+You can also verify the script by hand against
+[`CursedCursor.ps1.sha256`](CursedCursor.ps1.sha256):
+
+```powershell
+(Get-FileHash .\CursedCursor.ps1 -Algorithm SHA256).Hash   # compare to the .sha256 file
 ```
 
 Uninstall any time:

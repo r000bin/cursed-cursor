@@ -38,9 +38,38 @@ Install-Script -Name CursedCursor -Scope CurrentUser
 
 ## Shipping an update
 
-1. Bump `.VERSION` in the `<#PSScriptInfo #>` block at the top of
-   `CursedCursor.ps1` (semantic versioning, e.g. `1.0.0` -> `1.1.0`).
-2. Note what changed under `.RELEASENOTES`.
-3. Commit, tag (`git tag v1.1.0 && git push --tags`), then run `Publish-Script`
-   again. Gallery versions are immutable — you can't overwrite a published
-   version, only publish a higher one.
+The GitHub installer pins a release **tag** and verifies a **SHA256 checksum**,
+so a release is a few coordinated steps. Say you're going from `1.0.0` -> `1.1.0`:
+
+1. **Edit the tool** and bump `.VERSION` to `1.1.0` (and `.RELEASENOTES`) in the
+   `<#PSScriptInfo #>` block of `CursedCursor.ps1`. Commit and push to `main`.
+
+2. **Regenerate the checksum** from the file *as raw GitHub serves it* (LF line
+   endings — do NOT hash your local CRLF working copy):
+
+   ```powershell
+   $tmp = New-TemporaryFile
+   irm 'https://raw.githubusercontent.com/r000bin/cursed-cursor/main/CursedCursor.ps1' -OutFile $tmp
+   $h = (Get-FileHash $tmp -Algorithm SHA256).Hash
+   "$h  CursedCursor.ps1" | Set-Content .\CursedCursor.ps1.sha256
+   Remove-Item $tmp
+   ```
+
+3. **Bump the installer's default** `$Ref` to `'v1.1.0'` in `install.ps1`.
+
+4. **Commit, then tag and push** so the tag holds the matching script +
+   checksum + installer:
+
+   ```powershell
+   git add -A; git commit -m "Release v1.1.0"
+   git tag v1.1.0; git push; git push --tags
+   ```
+
+5. **Publish to the Gallery** (immutable versions — you can only go up):
+
+   ```powershell
+   Publish-Script -Path .\CursedCursor.ps1 -NuGetApiKey $env:PSGALLERY_KEY
+   ```
+
+> Optional: turn the tag into a formal GitHub Release (web UI or
+> `gh release create v1.1.0`) for release notes and download stats.
