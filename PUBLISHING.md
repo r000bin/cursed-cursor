@@ -1,51 +1,16 @@
-# Publishing to the PowerShell Gallery
+# Releasing a new version
 
-`CursedCursor.ps1` carries a `PSScriptInfo` metadata block at the top, so it can
-be published as a Gallery *script* (installed by users with `Install-Script`).
+The GitHub installer (`install.ps1`) pins a release **tag** and verifies the
+downloaded `CursedCursor.ps1` against a published **SHA256 checksum**, so cutting
+a release is a few coordinated steps. Say you're going from `1.0.0` -> `1.1.0`:
 
-## One-time setup
-
-1. **Create a Gallery account** at <https://www.powershellgallery.com> (sign in
-   with a Microsoft/GitHub account).
-2. **Get your API key:** profile → *API Keys* → create one scoped to *Push new
-   packages and package versions*. Treat it like a password — don't commit it.
-3. **Update the publishing tooling** (the built-in PowerShellGet 1.0.0.1 is old):
-
-   ```powershell
-   Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
-   Install-Module -Name PowerShellGet -Force -AllowClobber -Scope CurrentUser
-   # restart PowerShell so the new module loads
-   ```
-
-## Publish a release
-
-From the repo root:
-
-```powershell
-# 1. Sanity-check the metadata parses
-Test-ScriptFileInfo -Path .\CursedCursor.ps1
-
-# 2. Push it (use your real key; or set $env:PSGALLERY_KEY first)
-Publish-Script -Path .\CursedCursor.ps1 -NuGetApiKey $env:PSGALLERY_KEY
-```
-
-It appears at <https://www.powershellgallery.com/packages/CursedCursor> within a
-few minutes. Users then install with:
-
-```powershell
-Install-Script -Name CursedCursor -Scope CurrentUser
-```
-
-## Shipping an update
-
-The GitHub installer pins a release **tag** and verifies a **SHA256 checksum**,
-so a release is a few coordinated steps. Say you're going from `1.0.0` -> `1.1.0`:
-
-1. **Edit the tool** and bump `.VERSION` to `1.1.0` (and `.RELEASENOTES`) in the
-   `<#PSScriptInfo #>` block of `CursedCursor.ps1`. Commit and push to `main`.
+1. **Edit the tool** and bump `.VERSION` (note changes under `.RELEASENOTES`) in
+   the `<#PSScriptInfo #>` block at the top of `CursedCursor.ps1`. Commit and
+   push to `main`.
 
 2. **Regenerate the checksum** from the file *as raw GitHub serves it* (LF line
-   endings — do NOT hash your local CRLF working copy):
+   endings — do NOT hash your local CRLF working copy, or the installer and CI
+   will reject it):
 
    ```powershell
    $tmp = New-TemporaryFile
@@ -65,11 +30,9 @@ so a release is a few coordinated steps. Say you're going from `1.0.0` -> `1.1.0
    git tag v1.1.0; git push; git push --tags
    ```
 
-5. **Publish to the Gallery** (immutable versions — you can only go up):
-
-   ```powershell
-   Publish-Script -Path .\CursedCursor.ps1 -NuGetApiKey $env:PSGALLERY_KEY
-   ```
+That's it — `irm .../install.ps1 | iex` now installs `v1.1.0` with a verified
+checksum. CI re-checks the checksum on every push, so an inconsistent pair fails
+the build.
 
 > Optional: turn the tag into a formal GitHub Release (web UI or
 > `gh release create v1.1.0`) for release notes and download stats.
