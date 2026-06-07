@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checksum:
+    name: Verify CursedCursor.ps1.sha256
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checksum matches script
+        run: |
+          # Hash the git BLOB (LF) - exactly what raw.githubusercontent.com
+          # serves and what the installer downloads. The checked-out working
+          # tree is CRLF (see .gitattributes), so hashing the file on disk would
+          # be wrong here.
+          actual=$(git cat-file blob HEAD:CursedCursor.ps1 | sha256sum | cut -d' ' -f1 | tr 'A-Z' 'a-z')
+          expected=$(cut -d' ' -f1 CursedCursor.ps1.sha256 | tr 'A-Z' 'a-z')
+          echo "expected: $expected"
+          echo "actual:   $actual"
+          if [ "$actual" != "$expected" ]; then
+            echo "::error file=CursedCursor.ps1.sha256::Checksum does not match CursedCursor.ps1. Regenerate it from the raw URL (see PUBLISHING.md)."
+            exit 1
+          fi
+          echo "Checksum OK."
+
+  lint:
+    name: Parse-check scripts
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PowerShell scripts parse without errors
+        shell: pwsh
+        run: |
+          $failed = $false
+          Get-ChildItem -Path . -Filter *.ps1 -Recurse | ForEach-Object {
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$null, [ref]$errors) | Out-Null
+            if ($errors) {
+              $failed = $true
+              Write-Host "::error file=$($_.Name)::$($errors.Count) parse error(s)"
+              $errors | ForEach-Object { Write-Host "  $($_.Message)" }
+            } else {
+              Write-Host "OK: $($_.Name)"
+            }
+          }
+          if ($failed) { exit 1 }

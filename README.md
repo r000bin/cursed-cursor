@@ -167,11 +167,6 @@ $SluggishMin/Max, $FlightyMin/Max        # 'wild' bimodal speed bands
 $WildIntervalMinSec / $WildIntervalMaxSec # 'wild' random interval
 ```
 
-## Releasing
-
-Maintainers: see [PUBLISHING.md](PUBLISHING.md) for how to publish a new version
-to the PowerShell Gallery.
-
 ## License
 
 MIT — see [LICENSE](LICENSE).
