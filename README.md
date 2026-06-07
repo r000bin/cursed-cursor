@@ -16,7 +16,7 @@ explicit goal is to make clicking anything genuinely hard.
 
 ## Install
 
-### Quick install (one line, no Gallery account needed)
+### Quick install (one line, no setup)
 
 ```powershell
 irm https://raw.githubusercontent.com/r000bin/cursed-cursor/main/install.ps1 | iex
@@ -63,19 +63,6 @@ Uninstall any time:
 ```powershell
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/r000bin/cursed-cursor/main/install.ps1))) -Uninstall
 ```
-
-### From the PowerShell Gallery
-
-```powershell
-Install-Script -Name CursedCursor -Scope CurrentUser
-CursedCursor wild
-```
-
-Update later with `Update-Script CursedCursor`, remove with `Uninstall-Script CursedCursor`.
-
-> Installed scripts are still `.ps1`, so your [execution policy](https://learn.microsoft.com/powershell/module/microsoft.powershell.security/set-executionpolicy)
-> applies. Most devs already run `RemoteSigned`; if not:
-> `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
 
 ### Or just clone and run
 
